@@ -1,0 +1,20 @@
+eureka:
+  client:
+    register-with-eureka: false
+
+
+spring:
+  application:
+    name: msvc-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: msvc-autenticacion
+          uri: http://localhost:8081
+          predicates:
+            - Path=/graphql/**
+          filters:
+            - AddRequestHeader=Content-Type, application/json

@@ -1,0 +1,190 @@
+
+type Tenant {
+    tenantId: ID
+    ciudad: String
+    nombre: String
+    razonSocial: String
+    nit: String
+    estado: String
+    fechaRegistro: String
+    fechaActivacion: String
+    fechaVencimiento: String
+    contactoNombre: String
+    direccion: String
+    contactoEmail: String
+    contactoTelefono: String
+    suscripcion: Suscripcion
+    usuarios: [UsuarioSimple]
+    roles: [RolSimple]
+    permisos: [PermisoSimple]
+    createdAt: String
+}
+
+type Usuario {
+    usuarioId: ID
+    nombre: String
+    apellido: String
+    email: String
+    telefono: String
+    username: String
+    estado: Boolean
+    tenant: TenantSimple
+    roles: [RolSimple]
+    createdAt: String
+}
+
+type Rol {
+    rolId: ID
+    nombre: String
+    descripcion: String
+    estado: Boolean
+    tenant: TenantSimple
+    usuarios: [UsuarioSimple]
+    permisos: [PermisoSimple]
+    createdAt: String
+}
+
+type Permiso {
+    permisoId: ID
+    codigo: String
+    nombre: String
+    descripcion: String
+    tenant: TenantSimple
+}
+
+type Suscripcion {
+    suscripcionId: ID
+    nombre: String
+    precio: Float
+    tenants: [TenantSimple]
+}
+
+type TenantSimple {
+    tenantId: ID
+    nombre: String
+    razonSocial: String
+    estado: String
+}
+
+type UsuarioSimple {
+    usuarioId: ID
+    nombre: String
+    apellido: String
+    username: String
+}
+
+type RolSimple {
+    rolId: ID
+    nombre: String
+    estado: Boolean
+}
+
+type PermisoSimple {
+    permisoId: ID
+    codigo: String
+    nombre: String
+}
+
+
+type AuthPayload {
+    token: String
+    usuario: Usuario
+}
+
+
+input TenantInput {
+    ciudad: String!
+    nombre: String!
+    razonSocial: String!
+    nit: String!
+    estado: String
+    fechaRegistro: String
+    fechaActivacion: String
+    fechaVencimiento: String
+    contactoNombre: String
+    direccion: String
+    contactoEmail: String!
+    contactoTelefono: String
+    suscripcionId: ID!
+}
+
+input UsuarioInput {
+    nombre: String!
+    apellido: String!
+    email: String!
+    password: String
+    telefono: String
+    username: String!
+    estado: Boolean
+    tenantId: ID!
+    rolIds: [ID!]
+}
+
+input RolInput {
+    nombre: String!
+    descripcion: String
+    estado: Boolean
+    tenantId: ID!
+    permisoIds: [ID!]
+}
+
+input PermisoInput {
+    codigo: String!
+    nombre: String!
+    descripcion: String
+    tenantId: ID!
+}
+
+
+type Query {
+    # Queries de Tenant
+    tenantById(id: ID!): Tenant
+    tenants: [Tenant]
+    tenantsByEstado(estado: String!): [Tenant]
+
+    # Queries de Usuario
+    usuarioById(id: ID!): Usuario
+    usuarioByUsername(username: String!): Usuario
+    usuariosByTenantId(tenantId: ID!): [Usuario]
+
+
+    rolById(id: ID!): Rol
+    rolesByTenantId(tenantId: ID!): [Rol]
+
+
+    permisoById(id: ID!): Permiso
+    permisosByCodigo(codigo: String!): [Permiso]
+    permisosByTenantId(tenantId: ID!): [Permiso]
+
+
+    suscripcionById(id: ID!): Suscripcion
+    suscripciones: [Suscripcion]
+}
+
+
+type Mutation {
+    # Mutations de Tenant
+    createTenant(input: TenantInput!): Tenant
+    updateTenant(id: ID!, input: TenantInput!): Tenant
+    deleteTenant(id: ID!): Boolean
+
+    # Mutations de Usuario
+    createUsuario(input: UsuarioInput!): Usuario
+    updateUsuario(id: ID!, input: UsuarioInput!): Usuario
+    deleteUsuario(id: ID!): Boolean
+    assignRolesToUsuario(usuarioId: ID!, rolIds: [ID!]!): Usuario
+
+    # Mutations de Rol
+    createRol(input: RolInput!): Rol
+    updateRol(id: ID!, input: RolInput!): Rol
+    deleteRol(id: ID!): Boolean
+    assignPermisosToRol(rolId: ID!, permisoIds: [ID!]!): Rol
+
+    # Mutations de Permiso
+    createPermiso(input: PermisoInput!): Permiso
+    updatePermiso(id: ID!, input: PermisoInput!): Permiso
+    deletePermiso(id: ID!): Boolean
+
+    # Autenticación
+    login(username: String!, password: String!): AuthPayload
+}

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: msvc-erp
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nombre_de_tu_bd
+    username: tu_usuario
+    password: tu_contraseña
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8080
