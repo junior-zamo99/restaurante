@@ -10,5 +10,6 @@ import java.util.List;
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     List<Categoria> findByTenantTenantId(Long tenantId);
+    Categoria findByCategoriaIdAndTenantTenantId(Long categoriaId, Long tenantId);
 
 }

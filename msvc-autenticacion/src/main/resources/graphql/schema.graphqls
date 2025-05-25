@@ -91,6 +91,21 @@ type AuthPayload {
     usuario: Usuario
 }
 
+type Categoria {
+    categoriaId: ID
+    nombre: String
+    descripcion: String
+    estado: Boolean
+    tenant: TenantSimple
+}
+
+type CategoriaSimple {
+    categoriaId: ID
+    nombre: String
+    descripcion: String
+}
+
+
 
 input TenantInput {
     ciudad: String!
@@ -135,6 +150,14 @@ input PermisoInput {
     tenantId: ID!
 }
 
+input CategoriaInput {
+    nombre: String!
+    descripcion: String
+    tenantId: ID!
+}
+
+
+
 
 type Query {
     # Queries de Tenant
@@ -159,6 +182,11 @@ type Query {
 
     suscripcionById(id: ID!): Suscripcion
     suscripciones: [Suscripcion]
+
+    # Queries de Categoria
+
+    categoriaById(id: ID!): Categoria
+    categoriasByTenantId(tenantId: ID!): [Categoria]
 }
 
 
@@ -187,4 +215,8 @@ type Mutation {
 
     # Autenticación
     login(username: String!, password: String!): AuthPayload
+
+    # Mutations de Categoria
+
+    createCategoria(input: CategoriaInput!): Categoria
 }
