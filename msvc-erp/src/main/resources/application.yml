@@ -1,19 +1,43 @@
 spring:
   application:
-    name: msvc-erp
+    name: msvc_erp
+  cloud:
+    config:
+      enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/nombre_de_tu_bd
-    username: tu_usuario
-    password: tu_contraseña
+    url: jdbc:postgresql://localhost:5432/msvc-erp
+    username: postgres1
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
     hibernate:
       ddl-auto: update
     show-sql: true
+  graphql:
+    path: /graphql
+    schema:
+      locations: classpath:graphql/
+    graphiql:
+      enabled: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterAccess=15m
 
 server:
-  port: 8080
+  port: 8082
+
+auth:
+  service:
+    url: localhost:8080/graphql
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full

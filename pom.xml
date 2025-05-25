@@ -26,9 +26,7 @@
        <module>
            msvc-config
        </module>
-         <module>
-              msvc-erp
-         </module>
+
    </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

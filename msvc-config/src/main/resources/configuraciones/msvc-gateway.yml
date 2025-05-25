@@ -18,3 +18,11 @@ spring:
             - Path=/graphql/**
           filters:
             - AddRequestHeader=Content-Type, application/json
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600

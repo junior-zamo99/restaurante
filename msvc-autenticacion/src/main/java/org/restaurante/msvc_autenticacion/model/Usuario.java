@@ -19,7 +19,7 @@ public class Usuario  {
 
     @Override
     public int hashCode() {
-        return Objects.hash(usuarioId); // Solo usar usuarioId
+        return Objects.hash(usuarioId);
     }
 
 
