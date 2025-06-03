@@ -21,7 +21,7 @@ public class Venta {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "venta_id")
     private Long ventaId;
 

@@ -20,7 +20,7 @@ public class Permiso {
         return Objects.hash(permisoId); // Solo usar permisoId
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "permiso_id")
     private Long permisoId;
 

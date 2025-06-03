@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface VentaRepository extends JpaRepository<Venta, Long> {
 
+
     List<Venta> findByTenantTenantId(Long tenantId);
 
     List<Venta> findByTenantTenantIdAndEstado(Long tenantId, String estado);
@@ -41,9 +42,11 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     @Query("SELECT v FROM Venta v WHERE v.tenant.tenantId = :tenantId ORDER BY v.fechaVenta DESC")
     List<Venta> findByTenantIdOrderByFechaVentaDesc(@Param("tenantId") Long tenantId);
 
-    @Query("SELECT v FROM Venta v WHERE v.tenant.tenantId = :tenantId AND DATE(v.fechaVenta) = CURRENT_DATE")
+    // ✅ CORREGIDO: Cambié DATE() por CAST()
+    @Query("SELECT v FROM Venta v WHERE v.tenant.tenantId = :tenantId AND CAST(v.fechaVenta AS date) = CURRENT_DATE")
     List<Venta> findVentasDelDiaByTenantId(@Param("tenantId") Long tenantId);
 
-    @Query("SELECT SUM(v.total) FROM Venta v WHERE v.tenant.tenantId = :tenantId AND v.estado = 'COMPLETADA' AND DATE(v.fechaVenta) = CURRENT_DATE")
+    // ✅ CORREGIDO: Cambié DATE() por CAST()
+    @Query("SELECT SUM(v.total) FROM Venta v WHERE v.tenant.tenantId = :tenantId AND v.estado = 'COMPLETADA' AND CAST(v.fechaVenta AS date) = CURRENT_DATE")
     BigDecimal sumTotalVentasDelDiaByTenantId(@Param("tenantId") Long tenantId);
 }

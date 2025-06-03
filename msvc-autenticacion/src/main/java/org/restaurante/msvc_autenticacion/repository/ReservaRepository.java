@@ -33,10 +33,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("SELECT r FROM Reserva r WHERE r.mesa.mesaId = :mesaId AND DATE(r.fechaReserva) = DATE(:fecha) AND r.estado = true")
     List<Reserva> findReservasActivasByMesaAndFecha(@Param("mesaId") Long mesaId, @Param("fecha") LocalDateTime fecha);
 
-    @Query("SELECT r FROM Reserva r WHERE r.tenant.tenantId = :tenantId AND DATE(r.fechaReserva) = CURRENT_DATE AND r.estado = true")
+    @Query("SELECT r FROM Reserva r WHERE r.tenant.tenantId = :tenantId AND CAST(r.fechaReserva AS date) = CURRENT_DATE AND r.estado = true")
     List<Reserva> findReservasActivasDelDiaByTenantId(@Param("tenantId") Long tenantId);
 
-    @Query("SELECT r FROM Reserva r WHERE r.tenant.tenantId = :tenantId AND DATE(r.fechaReserva) = CURRENT_DATE")
+    @Query("SELECT r FROM Reserva r WHERE r.tenant.tenantId = :tenantId AND CAST(r.fechaReserva AS date) = CURRENT_DATE")
     List<Reserva> findReservasDelDiaByTenantId(@Param("tenantId") Long tenantId);
 
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.tenant.tenantId = :tenantId AND r.estado = :estado")

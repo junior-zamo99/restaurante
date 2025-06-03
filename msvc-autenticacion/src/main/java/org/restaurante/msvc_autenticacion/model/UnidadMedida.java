@@ -20,7 +20,7 @@ public class UnidadMedida {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "unidadmedida_id")
     private Long unidadMedidaId;
 

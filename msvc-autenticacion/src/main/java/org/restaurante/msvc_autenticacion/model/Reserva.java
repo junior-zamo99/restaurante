@@ -21,7 +21,7 @@ public class Reserva {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "reserva_id")
     private Long reservaId;
 

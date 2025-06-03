@@ -18,7 +18,7 @@ public class Categoria {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "categoria_id")
     private Long categoriaId;
 

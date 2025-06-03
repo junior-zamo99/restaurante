@@ -18,7 +18,7 @@ public class TipoMovimiento {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "tipo_movimiento_id")
     private Long tipoMovimientoId;
     private String nombre;

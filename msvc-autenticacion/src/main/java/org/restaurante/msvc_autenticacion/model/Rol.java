@@ -19,7 +19,7 @@ public class Rol  {
         return Objects.hash(rolId); // Solo usar rolId
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
 
     @Column(name = "rol_id")
     private Long rolId;

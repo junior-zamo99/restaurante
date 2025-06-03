@@ -18,7 +18,7 @@ public class Pedido {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long pedidoId;
 
     @Column(name = "fecha_hora")

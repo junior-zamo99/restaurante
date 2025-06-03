@@ -18,7 +18,7 @@ public class MovimientoInventario {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long movimientoId;
     private Double cantidad;
     private String motivo;

@@ -21,7 +21,7 @@ public class Almacen {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "almacen_id")
     private Long almacenId;
     private String nombre;

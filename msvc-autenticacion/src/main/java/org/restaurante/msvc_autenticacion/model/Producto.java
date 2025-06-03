@@ -18,7 +18,7 @@ public class Producto {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "producto_id")
     private Long productoId;
     private String nombre;
