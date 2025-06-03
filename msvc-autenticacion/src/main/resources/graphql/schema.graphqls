@@ -105,7 +105,125 @@ type CategoriaSimple {
     descripcion: String
 }
 
+type UnidadMedida{
+    unidadMedidaId: ID
+    nombre: String
+    abreviatura: String
+    tenant: TenantSimple
+}
 
+type UnidadMedidaSimple {
+    unidadMedidaId: ID
+    nombre: String
+    abreviatura: String
+}
+
+type Producto{
+    productoId: ID
+    nombre: String
+    nombreCorto: String
+    descripcion: String
+    precio: Float
+    categoria: CategoriaSimple
+    unidadMedida: UnidadMedidaSimple
+    tenant: TenantSimple
+}
+
+type ProductoSimple {
+    productoId: ID
+    nombre: String
+    nombreCorto: String
+    descripcion: String
+    precio: Float
+}
+
+type Almacen {
+    almacenId: ID
+    nombre: String
+    ubicacion: String
+    telefono: String
+    tenant: TenantSimple
+}
+type AlmacenSimple {
+    almacenId: ID
+    nombre: String
+    ubicacion: String
+}
+
+type Insumo{
+    insumoId: ID
+    nombre: String
+    descripcion: String
+    categoria: CategoriaSimple
+    unidadMedida: UnidadMedidaSimple
+    tenant: TenantSimple
+}
+
+type TipoMovimiento{
+    tipoMovimientoId: ID
+    nombre: String
+    descripcion: String
+    afectaInventario: Boolean
+}
+
+type TipoMovimientoSimple {
+    tipoMovimientoId: ID
+    nombre: String
+    descripcion: String
+    afectaInventario: Boolean
+}
+
+
+type insumoSimple {
+    insumoId: ID
+    nombre: String
+    descripcion: String
+}
+
+type AlmacenInsumo{
+    almacenInsumoId: ID
+    almacen: AlmacenSimple
+    insumo: insumoSimple
+    cantidad: Float
+}
+
+type AlmacenInsumoSimple {
+    almacenInsumoId: ID
+    almacen: AlmacenSimple
+    insumo: insumoSimple
+    cantidad: Float
+}
+
+type MovimientoInventario{
+    movimientoId: ID
+    tipoMovimiento: TipoMovimientoSimple
+    almacenInsumo: AlmacenInsumoSimple
+    cantidad: Float
+    tenant: TenantSimple
+    motivo: String
+
+}
+
+type MovimientoInventarioSimple {
+    movimientoId: ID
+    cantidad: Float
+    motivo: String
+}
+
+type Mesa{
+    mesaId: ID
+    numero: Int
+    estado: Boolean
+    capacidad: Int
+    tenant: TenantSimple
+}
+
+type MesaSimple {
+    mesaId: ID
+    numero: Int
+    capacidad: Int
+    estado: Boolean
+}
 
 input TenantInput {
     ciudad: String!
@@ -156,6 +274,235 @@ input CategoriaInput {
     tenantId: ID!
 }
 
+input UnidadMedidaInput {
+    nombre: String!
+    abreviatura: String!
+    tenantId: ID!
+}
+
+input ProductoInput {
+    nombre: String!
+    nombreCorto: String
+    descripcion: String
+    precio: Float
+    categoriaId: ID!
+    unidadMedidaId: ID!
+    tenantId: ID!
+}
+
+input AlmacenInput {
+    nombre: String!
+    ubicacion: String
+    tenantId: ID!
+}
+
+input InsumoInput {
+    nombre: String!
+    descripcion: String
+    categoriaId: ID!
+    unidadMedidaId: ID!
+    tenantId: ID!
+}
+
+input AlmacenInsumoInput {
+    almacenId: ID!
+    insumoId: ID!
+    cantidad: Float!
+}
+
+input MovimientoInventarioInput {
+    tipoMovimientoId: ID!
+    almacenInsumoId: ID!
+    cantidad: Float!
+    tenantId: ID!
+    motivo: String
+}
+
+input MesaInput {
+    numero: Int!
+    estado: Boolean
+    capacidad: Int
+    tenantId: ID!
+}
+
+# Nuevos tipos para Pedido
+type Pedido {
+    pedidoId: ID
+    fechaHora: String
+    notas: String
+    total: Float
+    estado: Boolean
+    tenant: TenantSimple
+    detalles: [PedidoDetalleSimple]
+    createdAt: String
+}
+
+type PedidoSimple {
+    pedidoId: ID
+    fechaHora: String
+    total: Float
+    estado: Boolean
+}
+
+# Nuevos tipos para PedidoDetalle
+type PedidoDetalle {
+    pedidoDetalleId: ID
+    cantidad: Int
+    subtotal: Float
+    estado: String
+    notas: String
+    pedido: PedidoSimple
+    producto: ProductoSimple
+    createdAt: String
+}
+
+type PedidoDetalleSimple {
+    pedidoDetalleId: ID
+    cantidad: Int
+    subtotal: Float
+    productoNombre: String
+    estado: String
+}
+
+# Nuevos inputs
+input PedidoInput {
+    notas: String
+    estado: Boolean
+    tenantId: ID!
+    detalles: [PedidoDetalleInput!]
+}
+
+input PedidoDetalleInput {
+    cantidad: Int!
+    estado: String
+    notas: String
+    pedidoId: ID
+    productoId: ID!
+}
+
+type Cliente {
+    clienteId: ID
+    nombre: String
+    apellido: String
+    email: String
+    telefono: String
+    direccion: String
+    fechaNacimiento: String
+    estado: Boolean
+    tenant: TenantSimple
+    createdAt: String
+}
+
+type ClienteSimple {
+    clienteId: ID
+    nombre: String
+    apellido: String
+    telefono: String
+}
+input ClienteInput {
+    nombre: String!
+    apellido: String!
+    email: String
+    telefono: String
+    direccion: String
+    fechaNacimiento: String
+    estado: Boolean
+    tenantId: ID!
+}
+
+# Tipos para Venta
+type Venta {
+    ventaId: ID
+    tenant: TenantSimple
+    total: Float
+    cuentaMesa: CuentaMesaSimple
+    estado: String
+    fechaVenta: String
+    observaciones: String
+    createdAt: String
+}
+
+type VentaSimple {
+    ventaId: ID
+    total: Float
+    estado: String
+    fechaVenta: String
+}
+
+# Input para Venta
+input VentaInput {
+    tenantId: ID!
+    total: Float!
+    cuentaMesaId: ID!
+    estado: String
+    observaciones: String
+}
+
+# Tipos para CuentaMesa
+type CuentaMesa {
+    cuentaMesaId: ID
+    mesa: MesaSimple
+    estado: String
+    fechaHoraIni: String
+    fechaHoraFin: String
+    numComensales: Int
+    cliente: ClienteSimple
+    montoTotal: Float
+    tenant: TenantSimple
+    createdAt: String
+}
+
+type CuentaMesaSimple {
+    cuentaMesaId: ID
+    estado: String
+    numComensales: Int
+    montoTotal: Float
+}
+
+
+input CuentaMesaInput {
+    mesaId: ID!
+    estado: String
+    fechaHoraFin: String
+    numComensales: Int!
+    clienteId: ID
+    montoTotal: Float
+    tenantId: ID!
+}
+
+# Tipos para Reserva
+type Reserva {
+    reservaId: ID
+    fechaReserva: String
+    hora: String
+    cantidadPersonas: Int
+    mesa: MesaSimple
+    cliente: ClienteSimple
+    estado: Boolean
+    tenant: TenantSimple
+    observaciones: String
+    createdAt: String
+}
+
+type ReservaSimple {
+    reservaId: ID
+    fechaReserva: String
+    hora: String
+    cantidadPersonas: Int
+    estado: Boolean
+}
+
+
+input ReservaInput {
+    fechaReserva: String!
+    hora: String!
+    cantidadPersonas: Int!
+    mesaId: ID!
+    clienteId: ID!
+    estado: Boolean
+    tenantId: ID!
+    observaciones: String
+}
 
 
 
@@ -187,6 +534,101 @@ type Query {
 
     categoriaById(id: ID!): Categoria
     categoriasByTenantId(tenantId: ID!): [Categoria]
+
+    # Queries de Unidad de Medida
+     unidadMedidaById(id: ID!): UnidadMedida
+    unidadesMedidaByTenantId(tenantId: ID!): [UnidadMedida]
+
+    # Queries de Producto
+
+    productoById(id: ID!): Producto
+    productosByTenantId(tenantId: ID!): [Producto]
+
+    # Queries de Almacen
+    almacenById(id: ID!): Almacen
+    almacenesByTenantId(tenantId: ID!): [Almacen]
+
+    # Queries de Insumo
+    insumoById(id: ID!): Insumo
+    insumosByTenantId(tenantId: ID!): [Insumo]
+
+    # Queries de AlmacenInsumo
+    getAlmacenInsumoById(id: ID!): AlmacenInsumo
+    getAlmacenInsumosByAlmacenId(almacenId: ID!): [AlmacenInsumo]
+    getAlmacenInsumosByInsumoId(insumoId: ID!): [AlmacenInsumo]
+    getAlmacenInsumoByAlmacenIdAndInsumoId(almacenId: ID!, insumoId: ID!): AlmacenInsumo
+
+    # Queries de TipoMovimiento
+
+    tipoMovimientoById(id: ID!): TipoMovimiento
+    tipoMovimientos: [TipoMovimiento]
+
+    # Queries de MovimientoInventario
+
+    movimientoInventarioById(id: ID!): MovimientoInventario
+    MovimientoInventarioByTenantId(tenantId: ID!): [MovimientoInventario]
+
+    # queries de Mesa
+
+    mesaByTenantIdAndMesaId(tenantId: ID!, mesaId: ID!): Mesa
+    mesasByTenantId(tenantId: ID!): [Mesa]
+    mesasByTenantIdAndEstado(tenantId: ID!, estado: Boolean!): [Mesa]
+
+    # NUEVAS Queries de Pedido
+    pedidoById(id: ID!): Pedido
+    pedidosByTenantId(tenantId: ID!): [Pedido]
+    pedidosByEstado(estado: Boolean!): [Pedido]
+
+    # NUEVAS Queries de PedidoDetalle
+    pedidoDetalleById(id: ID!): PedidoDetalle
+    pedidoDetallesByPedidoId(pedidoId: ID!): [PedidoDetalle]
+    pedidoDetallesByProductoId(productoId: ID!): [PedidoDetalle]
+
+    #  Queries de comanda
+    pedidoDetallesByEstadoAndTenant(estado: String!, tenantId: ID!): [PedidoDetalle]
+    comandaActivaPorTenant(tenantId: ID!): [PedidoDetalle]
+    pedidosListosParaEntregaPorTenant(tenantId: ID!): [PedidoDetalle]
+
+    # Queries de Cliente
+    clienteById(id: ID!): Cliente
+    clientesByTenantId(tenantId: ID!): [Cliente]
+    clientesByTenantIdAndEstado(tenantId: ID!, estado: Boolean!): [Cliente]
+    clienteByTenantIdAndEmail(tenantId: ID!, email: String!): Cliente
+    clienteByTenantIdAndTelefono(tenantId: ID!, telefono: String!): Cliente
+    searchClientesByTenantIdAndBusqueda(tenantId: ID!, busqueda: String!): [Cliente]
+
+    # Queries para Venta
+    ventaById(id: ID!): Venta
+    ventasByTenantId(tenantId: ID!): [Venta]
+    ventasByTenantIdAndEstado(tenantId: ID!, estado: String!): [Venta]
+    ventasByCuentaMesaId(cuentaMesaId: ID!): [Venta]
+    ventasByTenantIdOrderByFecha(tenantId: ID!): [Venta]
+    ventasDelDiaByTenantId(tenantId: ID!): [Venta]
+    totalVentasByTenantIdAndFecha(tenantId: ID!, fechaInicio: String!, fechaFin: String!): Float
+    totalVentasDelDiaByTenantId(tenantId: ID!): Float
+
+    # Queries de CuentaMesa
+    cuentaMesaById(id: ID!): CuentaMesa
+    cuentaMesasByTenantId(tenantId: ID!): [CuentaMesa]
+    cuentaMesasByTenantIdAndEstado(tenantId: ID!, estado: String!): [CuentaMesa]
+    cuentaMesaByMesaIdAndEstado(mesaId: ID!, estado: String!): CuentaMesa
+    cuentaMesasByTenantIdAndClienteId(tenantId: ID!, clienteId: ID!): [CuentaMesa]
+    cuentasActivasByTenantId(tenantId: ID!): [CuentaMesa]
+
+
+    # Queries de Reserva
+    reservaById(id: ID!): Reserva
+    reservasByTenantId(tenantId: ID!): [Reserva]
+    reservasByTenantIdAndEstado(tenantId: ID!, estado: Boolean!): [Reserva]
+    reservasByTenantIdAndClienteId(tenantId: ID!, clienteId: ID!): [Reserva]
+    reservasByTenantIdAndMesaId(tenantId: ID!, mesaId: ID!): [Reserva]
+    reservasByTenantIdAndFechaReserva(tenantId: ID!, fecha: String!): [Reserva]
+    reservasDelDiaByTenantId(tenantId: ID!): [Reserva]
+    reservasActivasDelDiaByTenantId(tenantId: ID!): [Reserva]
+
+
+
+
 }
 
 
@@ -219,4 +661,70 @@ type Mutation {
     # Mutations de Categoria
 
     createCategoria(input: CategoriaInput!): Categoria
+
+    # Mutations de Unidad de Medida
+    createUnidadMedida(input: UnidadMedidaInput!): UnidadMedida
+
+    # Mutations de Producto
+    createProducto(input: ProductoInput!): Producto
+
+    # Mutations de Almacen
+    createAlmacen(input: AlmacenInput!): Almacen
+    # Mutations de Insumo
+    createInsumo(input: InsumoInput!): Insumo
+    # Mutations de AlmacenInsumo
+    createAlmacenInsumo(input: AlmacenInsumoInput!): AlmacenInsumo
+    updateAlmacenInsumo(id: ID!, input: AlmacenInsumoInput!): AlmacenInsumo
+
+    # Mutations de MovimientoInventario
+    createMovimientoInventario(input: MovimientoInventarioInput!): MovimientoInventario
+
+    # Mutations de Mesa
+    createMesa(input: MesaInput!): Mesa
+
+
+    # NUEVAS Mutations de Pedido
+    createPedido(input: PedidoInput!): Pedido
+    updatePedido(id: ID!, input: PedidoInput!): Pedido
+    deletePedido(id: ID!): Boolean
+
+    # NUEVAS Mutations de PedidoDetalle
+    createPedidoDetalle(input: PedidoDetalleInput!): PedidoDetalle
+    updatePedidoDetalle(id: ID!, input: PedidoDetalleInput!): PedidoDetalle
+    deletePedidoDetalle(id: ID!): Boolean
+    #  Mutations de comanda
+    enviarPedidoAComanda(pedidoId: ID!, tenantId: ID!): Boolean
+    cambiarEstadoPedidoDetalle(pedidoDetalleId: ID!, nuevoEstado: String!, tenantId: ID!): PedidoDetalle
+    marcarDetalleComoListo(pedidoDetalleId: ID!, tenantId: ID!): PedidoDetalle
+    marcarDetalleComoEntregado(pedidoDetalleId: ID!, tenantId: ID!): PedidoDetalle
+
+    # Mutations de Cliente
+    createCliente(input: ClienteInput!): Cliente
+    updateCliente(id: ID!, input: ClienteInput!): Cliente
+    deleteCliente(id: ID!): Boolean
+    toggleEstadoCliente(id: ID!): Cliente
+
+    # Mutations para Venta
+
+    createVenta(input: VentaInput!): Venta
+    updateVenta(id: ID!, input: VentaInput!): Venta
+    completarVenta(id: ID!): Venta
+    cancelarVenta(id: ID!, motivo: String): Venta
+    deleteVenta(id: ID!): Boolean
+
+    # Mutations de CuentaMesa
+    createCuentaMesa(input: CuentaMesaInput!): CuentaMesa
+    updateCuentaMesa(id: ID!, input: CuentaMesaInput!): CuentaMesa
+    cerrarCuentaMesa(id: ID!): CuentaMesa
+    deleteCuentaMesa(id: ID!): Boolean
+
+    # Mutations de Reserva
+    createReserva(input: ReservaInput!): Reserva
+    updateReserva(id: ID!, input: ReservaInput!): Reserva
+    activarReserva(id: ID!): Reserva
+    desactivarReserva(id: ID!, motivo: String): Reserva
+    toggleEstadoReserva(id: ID!): Reserva
+    deleteReserva(id: ID!): Boolean
+
+
 }
