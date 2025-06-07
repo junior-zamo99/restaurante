@@ -21,7 +21,12 @@ public class Reserva {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reserva_seq")
+    @SequenceGenerator(
+            name = "reserva_seq",
+            sequenceName = "reserva_seq",
+            allocationSize = 1
+    )
     @Column(name = "reserva_id")
     private Long reservaId;
 
@@ -42,8 +47,22 @@ public class Reserva {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
+    @Column(nullable = true)
+    private Boolean mensajeConfirmacionEnviado;
+
+    @Column(nullable = true)
+    private LocalDateTime mensajeConfirmacionEnviadoEn;
+
+    @Column(nullable = true)
+    private LocalDateTime horaLimiteConfirmacion;
+
+    @Column(nullable = true)
+    private Boolean confirmada;
+
     @Column(name = "estado")
-    private Boolean estado;
+    private String estado;
+
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")
@@ -63,7 +82,7 @@ public class Reserva {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (estado == null) {
-            estado = true;
+            estado = "Activa";
         }
     }
 

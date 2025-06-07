@@ -21,7 +21,12 @@ public class Almacen {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "almacen_seq")
+    @SequenceGenerator(
+            name = "almacen_seq",
+            sequenceName="almacen_seq",
+            allocationSize = 1
+    )
     @Column(name = "almacen_id")
     private Long almacenId;
     private String nombre;

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class MesaSimpleDTO {
 
     private Long mesaId;
-    private String numero;
+    private Integer numero;
     private Integer capacidad;
     private Boolean estado;
 

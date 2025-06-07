@@ -23,11 +23,16 @@ public class Suscripcion {
 
     @Override
     public int hashCode() {
-        return Objects.hash(suscripcionId); // Solo usar suscripcionId
+        return Objects.hash(suscripcionId);
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "suscripcion_seq")
+    @SequenceGenerator(
+            name = "suscripcion_seq",
+            sequenceName = "suscripcion_seq",
+            allocationSize = 1
+    )
     @Column(name = "suscripcion_id")
     private Long suscripcionId;
 

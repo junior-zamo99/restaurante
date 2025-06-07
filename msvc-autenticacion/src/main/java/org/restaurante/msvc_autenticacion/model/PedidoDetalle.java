@@ -14,7 +14,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PedidoDetalle {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pedido_detalle_seq")
+    @SequenceGenerator(
+            name = "pedido_detalle_seq",
+            sequenceName = "pedido_detalle_seq",
+            allocationSize = 1
+    )
     @Column(name = "pedido_detalle_id")
     private Long pedidoDetalleId;
 

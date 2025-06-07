@@ -17,7 +17,7 @@ public class ReservaDTO {
     private Integer cantidadPersonas;
     private MesaSimpleDTO mesa;
     private ClienteSimpleDTO cliente;
-    private Boolean estado;
+    private String estado;
     private TenantSimpleDTO tenant;
     private String observaciones;
     private String createdAt;

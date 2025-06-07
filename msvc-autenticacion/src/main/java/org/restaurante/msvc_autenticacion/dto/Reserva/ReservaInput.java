@@ -13,7 +13,7 @@ public class ReservaInput {
     private Integer cantidadPersonas;
     private Long mesaId;
     private Long clienteId;
-    private Boolean estado;
+    private String estado;
     private Long tenantId;
     private String observaciones;
 }

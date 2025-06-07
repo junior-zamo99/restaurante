@@ -18,7 +18,12 @@ public class TipoMovimiento {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tipo_movimiento_seq")
+    @SequenceGenerator(
+            name = "tipo_movimiento_seq",
+            sequenceName = "tipo_movimiento_seq",
+            allocationSize = 1
+    )
     @Column(name = "tipo_movimiento_id")
     private Long tipoMovimientoId;
     private String nombre;

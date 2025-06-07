@@ -18,7 +18,12 @@ public class MovimientoInventario {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movimiento_inventario_seq")
+    @SequenceGenerator(
+            name = "movimiento_inventario_seq",
+            sequenceName = "movimiento_inventario_seq",
+            allocationSize = 1
+    )
     private Long movimientoId;
     private Double cantidad;
     private String motivo;

@@ -15,6 +15,7 @@ public class PedidoInput {
     private String notas;
     private Boolean estado;
     private Long tenantId;
+    private Long cuentaMesaId;
     private List<PedidoDetalleInput> detalles;
 
 }

@@ -21,7 +21,12 @@ public class Insumo {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "insumo_seq")
+    @SequenceGenerator(
+            name = "insumo_seq",
+            sequenceName = "insumo_seq",
+            allocationSize = 1
+    )
     @Column(name = "insumo_id")
     private Long insumoId;
 

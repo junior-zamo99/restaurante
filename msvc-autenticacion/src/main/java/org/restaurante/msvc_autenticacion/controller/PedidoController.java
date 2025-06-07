@@ -32,6 +32,11 @@ public class PedidoController {
         return pedidoService.findByEstado(estado);
     }
 
+    @QueryMapping
+    public List<PedidoDTO> pedidosByCuentaMesaId(@Argument Long cuentaMesaId) {
+        return pedidoService.findByCuentaMesaId(cuentaMesaId);
+    }
+
     @MutationMapping
     public PedidoDTO createPedido(@Argument PedidoInput input) {
         return pedidoService.create(input);

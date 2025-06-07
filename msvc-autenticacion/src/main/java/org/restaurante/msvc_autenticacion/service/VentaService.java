@@ -1,5 +1,9 @@
 package org.restaurante.msvc_autenticacion.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.restaurante.msvc_autenticacion.dto.Blockchain.BlockchainVerificationResponse;
 import org.restaurante.msvc_autenticacion.dto.Venta.VentaDTO;
 import org.restaurante.msvc_autenticacion.dto.Venta.VentaInput;
 import org.restaurante.msvc_autenticacion.mapper.VentaMapper;
@@ -10,6 +14,8 @@ import org.restaurante.msvc_autenticacion.repository.CuentaMesaRepository;
 import org.restaurante.msvc_autenticacion.repository.TenantRepository;
 import org.restaurante.msvc_autenticacion.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class VentaService {
 
     @Autowired
@@ -31,7 +38,13 @@ public class VentaService {
     private CuentaMesaRepository cuentaMesaRepository;
 
     @Autowired
+    private BlockchainService blockchainService;
+
+    @Autowired
     private VentaMapper ventaMapper;
+
+    @Value("${blockchain.url:http://localhost:3001}")
+    private String blockchainUrl;
 
     public VentaDTO findById(Long id) {
         Venta venta = ventaRepository.findById(id)
@@ -140,6 +153,11 @@ public class VentaService {
 
         venta.setEstado("COMPLETADA");
         Venta savedVenta = ventaRepository.save(venta);
+
+
+        blockchainService.registrarVenta(savedVenta).subscribe();
+
+
         return ventaMapper.toDto(savedVenta);
     }
 
@@ -174,5 +192,7 @@ public class VentaService {
         ventaRepository.deleteById(id);
         return true;
     }
+
+
 
 }

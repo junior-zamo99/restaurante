@@ -14,4 +14,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByTenantTenantIdAndEstado(Long tenantId, Boolean estado);
     List<Pedido> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Pedido> findByTenantTenantIdAndFechaHoraBetween(Long tenantId, LocalDateTime inicio, LocalDateTime fin);
+
+    List<Pedido> findByCuentaMesaCuentaMesaId(Long cuentaMesaId);
+    List<Pedido> findByTenantTenantIdAndCuentaMesaCuentaMesaId(Long tenantId, Long cuentaMesaId);
 }

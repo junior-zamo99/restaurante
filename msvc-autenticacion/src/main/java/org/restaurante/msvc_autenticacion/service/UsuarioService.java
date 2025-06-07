@@ -95,7 +95,7 @@ public class UsuarioService {
         usuario.setEmail(input.getEmail());
         usuario.setTelefono(input.getTelefono());
         usuario.setUsername(input.getUsername());
-        usuario.setEstado(input.getEstado());
+        usuario.setEstado(true);
 
         if (input.getPassword() != null && !input.getPassword().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(input.getPassword()));

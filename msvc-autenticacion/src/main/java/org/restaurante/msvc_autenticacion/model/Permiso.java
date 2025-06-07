@@ -17,10 +17,15 @@ public class Permiso {
 
     @Override
     public int hashCode() {
-        return Objects.hash(permisoId); // Solo usar permisoId
+        return Objects.hash(permisoId);
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permiso_seq")
+    @SequenceGenerator(
+            name = "permiso_seq",
+            sequenceName = "permiso_seq",
+            allocationSize = 1
+    )
     @Column(name = "permiso_id")
     private Long permisoId;
 

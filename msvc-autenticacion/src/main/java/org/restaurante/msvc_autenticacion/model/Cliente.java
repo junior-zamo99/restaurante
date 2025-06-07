@@ -22,7 +22,12 @@ public class Cliente {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "cliente_seq")
+    @SequenceGenerator(
+            name = "cliente_seq",
+            sequenceName = "cliente_seq",
+            allocationSize = 1
+    )
     @Column(name = "cliente_id")
     private Long clienteId;
 

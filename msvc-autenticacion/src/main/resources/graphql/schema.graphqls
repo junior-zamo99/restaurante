@@ -333,6 +333,7 @@ type Pedido {
     total: Float
     estado: Boolean
     tenant: TenantSimple
+    cuentaMesaId: CuentaMesaSimple
     detalles: [PedidoDetalleSimple]
     createdAt: String
 }
@@ -369,6 +370,7 @@ input PedidoInput {
     notas: String
     estado: Boolean
     tenantId: ID!
+    cuentaMesaId: ID!
     detalles: [PedidoDetalleInput!]
 }
 
@@ -472,38 +474,51 @@ input CuentaMesaInput {
 
 # Tipos para Reserva
 type Reserva {
-    reservaId: ID
-    fechaReserva: String
-    hora: String
-    cantidadPersonas: Int
-    mesa: MesaSimple
-    cliente: ClienteSimple
-    estado: Boolean
-    tenant: TenantSimple
+    id: ID!
+    fechaReserva: String!
+    hora: String!
+    cantidadPersonas: Int!
+    mesa: Mesa!
+    cliente: Cliente!
+    estado: String!
+    mensajeConfirmacionEnviado: Boolean
+    mensajeConfirmacionEnviadoEn: String
+    horaLimiteConfirmacion: String
+    confirmada: Boolean
     observaciones: String
+    tenant: Tenant!
     createdAt: String
+    updatedAt: String
 }
+
 
 type ReservaSimple {
     reservaId: ID
     fechaReserva: String
     hora: String
     cantidadPersonas: Int
-    estado: Boolean
+    estado: String
+
 }
 
 
 input ReservaInput {
+    tenantId: ID!
+    mesaId: ID!
+    clienteId: ID!
     fechaReserva: String!
     hora: String!
     cantidadPersonas: Int!
-    mesaId: ID!
-    clienteId: ID!
-    estado: Boolean
-    tenantId: ID!
+    estado: String
     observaciones: String
 }
 
+
+type BlockchainVerificationResponse {
+    valid: Boolean!
+    message: String
+    timestamp: String
+}
 
 
 type Query {
@@ -578,6 +593,7 @@ type Query {
     pedidoById(id: ID!): Pedido
     pedidosByTenantId(tenantId: ID!): [Pedido]
     pedidosByEstado(estado: Boolean!): [Pedido]
+    pedidosByCuentaMesaId(cuentaMesaId: ID!): [Pedido]
 
     # NUEVAS Queries de PedidoDetalle
     pedidoDetalleById(id: ID!): PedidoDetalle
@@ -618,16 +634,18 @@ type Query {
 
     # Queries de Reserva
     reservaById(id: ID!): Reserva
-    reservasByTenantId(tenantId: ID!): [Reserva]
-    reservasByTenantIdAndEstado(tenantId: ID!, estado: Boolean!): [Reserva]
-    reservasByTenantIdAndClienteId(tenantId: ID!, clienteId: ID!): [Reserva]
-    reservasByTenantIdAndMesaId(tenantId: ID!, mesaId: ID!): [Reserva]
-    reservasByTenantIdAndFechaReserva(tenantId: ID!, fecha: String!): [Reserva]
-    reservasDelDiaByTenantId(tenantId: ID!): [Reserva]
-    reservasActivasDelDiaByTenantId(tenantId: ID!): [Reserva]
+    reservasByTenantId(tenantId: ID!): [Reserva!]!
+    reservasByTenantIdAndEstado(tenantId: ID!, estado: String!): [Reserva!]!
+    reservasByTenantIdAndClienteId(tenantId: ID!, clienteId: ID!): [Reserva!]!
+    reservasByTenantIdAndMesaId(tenantId: ID!, mesaId: ID!): [Reserva!]!
+    reservasByTenantIdAndFechaReserva(tenantId: ID!, fecha: String!): [Reserva!]!
+    reservasDelDiaByTenantId(tenantId: ID!): [Reserva!]!
+    reservasActivasDelDiaByTenantId(tenantId: ID!): [Reserva!]!
+    reservasForReminder(tenantId: ID!, horas: Int!): [Reserva!]!
+    reservaPendienteByTelefono(telefono: String!): Reserva
 
-
-
+    # Blockchain verification
+    verificarIntegridadVenta(ventaId: ID!, tenantId: ID): BlockchainVerificationResponse
 
 }
 
@@ -725,6 +743,9 @@ type Mutation {
     desactivarReserva(id: ID!, motivo: String): Reserva
     toggleEstadoReserva(id: ID!): Reserva
     deleteReserva(id: ID!): Boolean
-
+    marcarNoShow(id: ID!): Reserva!
+    enviarRecordatorio(id: ID!): Reserva!
+    confirmarReserva(id: ID!): Reserva!
+    cancelarReservasExpiradas: [Reserva!]!
 
 }

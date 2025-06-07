@@ -16,6 +16,9 @@ public class PedidoMapper {
     private TenantMapper tenantMapper;
 
     @Autowired
+    private CuentaMesaMapper cuentaMesaMapper;
+
+    @Autowired
     @Lazy
     private PedidoDetalleMapper pedidoDetalleMapper;
 
@@ -34,6 +37,10 @@ public class PedidoMapper {
         if (pedido.getTenant() != null) {
             pedidoDTO.setTenant(tenantMapper.toSimpleDto(pedido.getTenant()));
         }
+        if (pedido.getCuentaMesa() != null) {
+            pedidoDTO.setCuentaMesa(cuentaMesaMapper.toSimpleDto(pedido.getCuentaMesa()));
+        }
+
 
         if (pedido.getDetalles() != null && !pedido.getDetalles().isEmpty()) {
             pedidoDTO.setDetalles(pedido.getDetalles().stream()

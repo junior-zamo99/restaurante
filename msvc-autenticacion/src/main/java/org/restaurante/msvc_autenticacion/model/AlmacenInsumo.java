@@ -19,7 +19,12 @@ public class AlmacenInsumo {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "almacen_insumo_seq")
+    @SequenceGenerator(
+            name = "almacen_insumo_seq",
+            sequenceName = "almacen_insumo_seq",
+            allocationSize = 1
+    )
     @Column(name = "almaceninsumo_id")
     private Long AlmacenInsumoId;
 

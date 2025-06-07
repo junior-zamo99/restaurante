@@ -20,7 +20,12 @@ public class UnidadMedida {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unidad_medida_seq")
+    @SequenceGenerator(
+            name = "unidad_medida_seq",
+            sequenceName = "unidad_medida_seq",
+            allocationSize = 1
+    )
     @Column(name = "unidadmedida_id")
     private Long unidadMedidaId;
 

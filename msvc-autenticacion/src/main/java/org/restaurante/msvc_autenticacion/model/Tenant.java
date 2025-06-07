@@ -31,7 +31,12 @@ public class Tenant  {
         return Objects.equals(tenantId, tenant.tenantId);
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tenant_seq")
+    @SequenceGenerator(
+            name = "tenant_seq",
+            sequenceName = "tenant_seq",
+            allocationSize = 1
+    )
     @Column(name = "tenant_id")
     private Long tenantId;
 

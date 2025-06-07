@@ -42,6 +42,11 @@ public class ReservaService {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    // Constantes para los estados
+    public static final String ESTADO_ACTIVA = "Activa";
+    public static final String ESTADO_CANCELADA = "Cancelada";
+    public static final String ESTADO_NOSHOW = "NoShow";
+
     public ReservaDTO findById(Long id) {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
@@ -54,7 +59,8 @@ public class ReservaService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservaDTO> findByTenantIdAndEstado(Long tenantId, Boolean estado) {
+    // Método modificado para trabajar con estado como String
+    public List<ReservaDTO> findByTenantIdAndEstado(Long tenantId, String estado) {
         return reservaRepository.findByTenantTenantIdAndEstado(tenantId, estado).stream()
                 .map(reservaMapper::toDto)
                 .collect(Collectors.toList());
@@ -117,7 +123,7 @@ public class ReservaService {
         try {
             LocalDateTime fechaReserva = LocalDateTime.parse(input.getFechaReserva() + " 00:00:00", DATE_TIME_FORMATTER);
 
-            if (reservaRepository.existsByMesaMesaIdAndFechaReservaAndEstado(input.getMesaId(), fechaReserva, true)) {
+            if (reservaRepository.existsByMesaMesaIdAndFechaReservaAndEstado(input.getMesaId(), fechaReserva, ESTADO_ACTIVA)) {
                 throw new RuntimeException("La mesa ya tiene una reserva activa para esta fecha");
             }
         } catch (Exception e) {
@@ -155,8 +161,18 @@ public class ReservaService {
         reserva.setCantidadPersonas(input.getCantidadPersonas());
         reserva.setObservaciones(input.getObservaciones());
 
+        // Manejo del estado como String
         if (input.getEstado() != null) {
+            // Validar que el estado sea uno de los permitidos
+            if (!ESTADO_ACTIVA.equals(input.getEstado()) &&
+                    !ESTADO_CANCELADA.equals(input.getEstado()) &&
+                    !ESTADO_NOSHOW.equals(input.getEstado())) {
+                throw new RuntimeException("Estado no válido. Use: Activa, Cancelada o NoShow");
+            }
             reserva.setEstado(input.getEstado());
+        } else if (reserva.getEstado() == null) {
+            // Estado por defecto
+            reserva.setEstado(ESTADO_ACTIVA);
         }
 
         if (input.getFechaReserva() != null && !input.getFechaReserva().isEmpty()) {
@@ -184,17 +200,17 @@ public class ReservaService {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
 
-        reserva.setEstado(true);
+        reserva.setEstado(ESTADO_ACTIVA);
         Reserva savedReserva = reservaRepository.save(reserva);
         return reservaMapper.toDto(savedReserva);
     }
 
     @Transactional
-    public ReservaDTO desactivarReserva(Long id, String motivo) {
+    public ReservaDTO cancelarReserva(Long id, String motivo) {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
 
-        reserva.setEstado(false);
+        reserva.setEstado(ESTADO_CANCELADA);
         if (motivo != null && !motivo.isEmpty()) {
             reserva.setObservaciones(reserva.getObservaciones() != null ?
                     reserva.getObservaciones() + " - CANCELADA: " + motivo : "CANCELADA: " + motivo);
@@ -205,11 +221,31 @@ public class ReservaService {
     }
 
     @Transactional
+    public ReservaDTO marcarNoShow(Long id) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
+
+        reserva.setEstado(ESTADO_NOSHOW);
+
+
+
+        Reserva savedReserva = reservaRepository.save(reserva);
+        return reservaMapper.toDto(savedReserva);
+    }
+
+    // Método modificado para alternar entre estados Activa y Cancelada
+    @Transactional
     public ReservaDTO toggleEstadoReserva(Long id) {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
 
-        reserva.setEstado(!reserva.getEstado());
+        // Alternamos entre Activa y Cancelada
+        if (ESTADO_ACTIVA.equals(reserva.getEstado())) {
+            reserva.setEstado(ESTADO_CANCELADA);
+        } else {
+            reserva.setEstado(ESTADO_ACTIVA);
+        }
+
         Reserva savedReserva = reservaRepository.save(reserva);
         return reservaMapper.toDto(savedReserva);
     }
@@ -223,4 +259,66 @@ public class ReservaService {
         return false;
     }
 
+    // Nuevos métodos para gestionar el flujo de confirmación
+
+    @Transactional
+    public ReservaDTO enviarRecordatorio(Long id) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
+
+        reserva.setMensajeConfirmacionEnviado(true);
+        reserva.setMensajeConfirmacionEnviadoEn(LocalDateTime.now());
+        // Establecer 6 horas como límite para confirmación
+        reserva.setHoraLimiteConfirmacion(LocalDateTime.now().plusHours(6));
+
+        Reserva savedReserva = reservaRepository.save(reserva);
+        return reservaMapper.toDto(savedReserva);
+    }
+
+    @Transactional
+    public ReservaDTO confirmarReserva(Long id) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con id: " + id));
+
+        reserva.setConfirmada(true);
+
+        Reserva savedReserva = reservaRepository.save(reserva);
+        return reservaMapper.toDto(savedReserva);
+    }
+
+    // Método para encontrar reservas que necesitan recordatorio
+    public List<ReservaDTO> findReservasForReminder(Long tenantId, Integer horas) {
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limite = ahora.plusHours(horas);
+
+        return reservaRepository.findReservasForReminder(tenantId, ahora, limite).stream()
+                .map(reservaMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // Método para cancelar reservas expiradas sin confirmación
+    @Transactional
+    public List<ReservaDTO> cancelarReservasExpiradas() {
+        List<Reserva> reservasExpiradas = reservaRepository.findReservasPendientesConfirmacionExpiradas(LocalDateTime.now());
+
+        List<Reserva> reservasCanceladas = reservasExpiradas.stream()
+                .map(reserva -> {
+                    reserva.setEstado(ESTADO_CANCELADA);
+                    reserva.setObservaciones((reserva.getObservaciones() != null ?
+                            reserva.getObservaciones() + " - " : "") + "Cancelada automáticamente: No confirmada dentro del tiempo límite");
+                    return reservaRepository.save(reserva);
+                })
+                .collect(Collectors.toList());
+
+        return reservasCanceladas.stream()
+                .map(reservaMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // Método para buscar reserva por teléfono del cliente pendiente de confirmación
+    public ReservaDTO findLatestPendingByClienteTelefono(String telefono) {
+        return reservaRepository.findLatestPendingByClienteTelefono(telefono)
+                .map(reservaMapper::toDto)
+                .orElse(null);
+    }
 }

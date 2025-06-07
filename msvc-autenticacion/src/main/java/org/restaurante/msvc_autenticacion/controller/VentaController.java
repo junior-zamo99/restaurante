@@ -1,7 +1,10 @@
 package org.restaurante.msvc_autenticacion.controller;
 
+import org.restaurante.msvc_autenticacion.dto.Blockchain.BlockchainVerificationResponse;
+import org.restaurante.msvc_autenticacion.dto.Blockchain.VerificacionIntegridadDTO;
 import org.restaurante.msvc_autenticacion.dto.Venta.VentaDTO;
 import org.restaurante.msvc_autenticacion.dto.Venta.VentaInput;
+import org.restaurante.msvc_autenticacion.service.BlockchainService;
 import org.restaurante.msvc_autenticacion.service.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -12,12 +15,16 @@ import org.springframework.stereotype.Controller;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Controller
 public class VentaController {
     @Autowired
     private VentaService ventaService;
+
+    @Autowired
+    private BlockchainService blockchainService;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -66,6 +73,15 @@ public class VentaController {
     public BigDecimal totalVentasDelDiaByTenantId(@Argument Long tenantId) {
         return ventaService.getTotalVentasDelDiaByTenantId(tenantId);
     }
+
+    @QueryMapping
+    public BlockchainVerificationResponse verificarIntegridadVenta(
+            @Argument Long ventaId,
+            @Argument(name = "tenantId") Long tenantId) {
+
+        return blockchainService.verificarVenta(ventaId, tenantId);
+    }
+
 
     @MutationMapping
     public VentaDTO createVenta(@Argument VentaInput input) {

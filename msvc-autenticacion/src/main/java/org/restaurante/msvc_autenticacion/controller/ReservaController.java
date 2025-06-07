@@ -10,7 +10,6 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-
 @Controller
 public class ReservaController {
 
@@ -27,8 +26,9 @@ public class ReservaController {
         return reservaService.findByTenantId(tenantId);
     }
 
+    // Modificado: estado ahora es String
     @QueryMapping
-    public List<ReservaDTO> reservasByTenantIdAndEstado(@Argument Long tenantId, @Argument Boolean estado) {
+    public List<ReservaDTO> reservasByTenantIdAndEstado(@Argument Long tenantId, @Argument String estado) {
         return reservaService.findByTenantIdAndEstado(tenantId, estado);
     }
 
@@ -57,6 +57,18 @@ public class ReservaController {
         return reservaService.findReservasActivasDelDiaByTenantId(tenantId);
     }
 
+    // Nuevo endpoint: Buscar reservas para recordatorio
+    @QueryMapping
+    public List<ReservaDTO> reservasForReminder(@Argument Long tenantId, @Argument Integer horas) {
+        return reservaService.findReservasForReminder(tenantId, horas);
+    }
+
+    // Nuevo endpoint: Buscar reserva por teléfono del cliente pendiente de confirmación
+    @QueryMapping
+    public ReservaDTO reservaPendienteByTelefono(@Argument String telefono) {
+        return reservaService.findLatestPendingByClienteTelefono(telefono);
+    }
+
     @MutationMapping
     public ReservaDTO createReserva(@Argument ReservaInput input) {
         return reservaService.create(input);
@@ -67,16 +79,25 @@ public class ReservaController {
         return reservaService.update(id, input);
     }
 
+    // Método actualizado: ahora establece estado = "Activa"
     @MutationMapping
     public ReservaDTO activarReserva(@Argument Long id) {
         return reservaService.activarReserva(id);
     }
 
+    // Método actualizado: ahora establece estado = "Cancelada"
     @MutationMapping
-    public ReservaDTO desactivarReserva(@Argument Long id, @Argument String motivo) {
-        return reservaService.desactivarReserva(id, motivo);
+    public ReservaDTO cancelarReserva(@Argument Long id, @Argument String motivo) {
+        return reservaService.cancelarReserva(id, motivo);
     }
 
+    // Nuevo endpoint: Marcar como NoShow
+    @MutationMapping
+    public ReservaDTO marcarNoShow(@Argument Long id) {
+        return reservaService.marcarNoShow(id);
+    }
+
+    // Método actualizado: ahora alterna entre estados "Activa" y "Cancelada"
     @MutationMapping
     public ReservaDTO toggleEstadoReserva(@Argument Long id) {
         return reservaService.toggleEstadoReserva(id);
@@ -87,4 +108,21 @@ public class ReservaController {
         return reservaService.delete(id);
     }
 
+    // Nuevos endpoints para gestionar recordatorios y confirmaciones
+
+    @MutationMapping
+    public ReservaDTO enviarRecordatorio(@Argument Long id) {
+        return reservaService.enviarRecordatorio(id);
+    }
+
+    @MutationMapping
+    public ReservaDTO confirmarReserva(@Argument Long id) {
+        return reservaService.confirmarReserva(id);
+    }
+
+    // Endpoint para procesar reservas expiradas sin confirmación
+    @MutationMapping
+    public List<ReservaDTO> cancelarReservasExpiradas() {
+        return reservaService.cancelarReservasExpiradas();
+    }
 }

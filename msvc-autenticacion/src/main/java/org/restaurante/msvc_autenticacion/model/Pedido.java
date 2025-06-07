@@ -18,7 +18,12 @@ public class Pedido {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pedido_seq")
+    @SequenceGenerator(
+            name = "pedido_seq",
+            sequenceName = "pedido_seq",
+            allocationSize = 1
+    )
     private Long pedidoId;
 
     @Column(name = "fecha_hora")
@@ -31,6 +36,11 @@ public class Pedido {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cuenta_mesa_id")
+    private CuentaMesa cuentaMesa;
+
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PedidoDetalle> detalles;

@@ -1,20 +1,15 @@
-package org.restaurante.msvc_autenticacion.dto.Mesa;
+package org.restaurante.msvc_autenticacion.dto.Blockchain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class MesaInput {
-
+@NoArgsConstructor
+public class MesaBlockchainDTO {
 
     private Integer numero;
     private Integer capacidad;
-    private Boolean estado;
-    private Long tenantId;
-
-
 
 }

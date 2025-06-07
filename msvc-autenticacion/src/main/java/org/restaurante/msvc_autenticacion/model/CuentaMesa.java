@@ -22,7 +22,12 @@ public class CuentaMesa {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "cuenta_mesa_seq")
+    @SequenceGenerator(
+            name = "cuenta_mesa_seq",
+            sequenceName = "cuenta_mesa_seq",
+            allocationSize = 1
+    )
     @Column(name = "cuenta_mesa_id")
     private Long cuentaMesaId;
 

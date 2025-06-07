@@ -4,6 +4,7 @@ import org.restaurante.msvc_autenticacion.dto.Pedido.PedidoDTO;
 import org.restaurante.msvc_autenticacion.dto.Pedido.PedidoInput;
 import org.restaurante.msvc_autenticacion.mapper.PedidoMapper;
 import org.restaurante.msvc_autenticacion.model.*;
+import org.restaurante.msvc_autenticacion.repository.CuentaMesaRepository;
 import org.restaurante.msvc_autenticacion.repository.PedidoRepository;
 import org.restaurante.msvc_autenticacion.repository.ProductoRepository;
 import org.restaurante.msvc_autenticacion.repository.TenantRepository;
@@ -32,6 +33,10 @@ public class PedidoService {
     @Autowired
     private PedidoMapper pedidoMapper;
 
+    @Autowired
+    private CuentaMesaRepository cuentaMesaRepository;
+
+
     public PedidoDTO findById(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con id: " + id));
@@ -56,6 +61,13 @@ public class PedidoService {
         return saveOrUpdatePedido(pedido, input);
     }
 
+    public List<PedidoDTO> findByCuentaMesaId(Long cuentaMesaId) {
+        return pedidoRepository.findByCuentaMesaCuentaMesaId(cuentaMesaId).stream()
+                .map(pedidoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
     @Transactional
     public PedidoDTO update(Long id, PedidoInput input) {
         Pedido pedido = pedidoRepository.findById(id)
@@ -71,6 +83,12 @@ public class PedidoService {
         Tenant tenant = tenantRepository.findById(input.getTenantId())
                 .orElseThrow(() -> new RuntimeException("Tenant no encontrado con id: " + input.getTenantId()));
         pedido.setTenant(tenant);
+
+        if (input.getCuentaMesaId() != null) {
+            CuentaMesa cuentaMesa = cuentaMesaRepository.findById(input.getCuentaMesaId())
+                    .orElseThrow(() -> new RuntimeException("Cuenta Mesa no encontrada con id: " + input.getCuentaMesaId()));
+            pedido.setCuentaMesa(cuentaMesa);
+        }
 
 
         if (input.getDetalles() != null && !input.getDetalles().isEmpty()) {

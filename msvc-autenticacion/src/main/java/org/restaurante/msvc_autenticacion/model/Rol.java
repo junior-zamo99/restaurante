@@ -16,10 +16,15 @@ import java.util.Set;
 public class Rol  {
     @Override
     public int hashCode() {
-        return Objects.hash(rolId); // Solo usar rolId
+        return Objects.hash(rolId);
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rol_seq")
+    @SequenceGenerator(
+            name = "rol_seq",
+            sequenceName = "rol_seq",
+            allocationSize = 1
+    )
 
     @Column(name = "rol_id")
     private Long rolId;

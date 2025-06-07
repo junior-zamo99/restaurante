@@ -12,5 +12,5 @@ public class ReservaSimpleDTO {
     private String fechaReserva;
     private String hora;
     private Integer cantidadPersonas;
-    private Boolean estado;
+    private String estado;
 }

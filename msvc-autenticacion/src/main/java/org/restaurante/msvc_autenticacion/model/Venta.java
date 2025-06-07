@@ -21,7 +21,12 @@ public class Venta {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "venta_seq")
+    @SequenceGenerator(
+            name = "venta_seq",
+            sequenceName = "venta_seq",
+            allocationSize = 1
+    )
     @Column(name = "venta_id")
     private Long ventaId;
 

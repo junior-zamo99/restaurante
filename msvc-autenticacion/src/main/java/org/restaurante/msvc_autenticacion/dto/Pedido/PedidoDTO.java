@@ -3,6 +3,7 @@ package org.restaurante.msvc_autenticacion.dto.Pedido;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.restaurante.msvc_autenticacion.dto.CuentaMesa.CuentaMesaSimpleDTO;
 import org.restaurante.msvc_autenticacion.dto.PedidoDetalle.PedidoDetalleSimpleDTO;
 import org.restaurante.msvc_autenticacion.dto.TenantSimpleDTO;
 
@@ -20,6 +21,7 @@ public class PedidoDTO {
     private Double total;
     private Boolean estado;
     private TenantSimpleDTO tenant;
+    private CuentaMesaSimpleDTO cuentaMesa;
     private List<PedidoDetalleSimpleDTO> detalles;
     private String createdAt;
 
