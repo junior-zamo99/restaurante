@@ -365,4 +365,10 @@ public class ReservaService {
                 .map(reservaMapper::toDto)
                 .orElse(null);
     }
+
+    public List<ReservaDTO> getReservasHoyPendientesDeConfirmacion(Long tenantId) {
+        return reservaRepository.findPendientesDeConfirmacionHoy(tenantId).stream()
+                .map(reservaMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -649,6 +649,7 @@ type Query {
     reservasActivasDelDiaByTenantId(tenantId: ID!): [Reserva!]!
     reservasForReminder(tenantId: ID!, horas: Int!): [Reserva!]!
     reservaPendienteByTelefono(telefono: String!): Reserva
+    getReservasHoyPendientesDeConfirmacion(tenantId: ID!): [Reserva!]!
 
     # Blockchain verification
     verificarIntegridadVenta(ventaId: ID!, tenantId: ID): BlockchainVerificationResponse
@@ -748,7 +749,7 @@ type Mutation {
     createReserva(input: ReservaInput!): Reserva
     updateReserva(id: ID!, input: ReservaInput!): Reserva
     activarReserva(id: ID!): Reserva
-    desactivarReserva(id: ID!, motivo: String): Reserva
+    cancelarReserva(id: ID!, motivo: String): Reserva
     toggleEstadoReserva(id: ID!): Reserva
     deleteReserva(id: ID!): Boolean
     marcarNoShow(id: ID!): Reserva!

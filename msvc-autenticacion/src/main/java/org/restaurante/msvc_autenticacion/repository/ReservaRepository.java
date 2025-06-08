@@ -89,4 +89,11 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             @Param("tenantId") Long tenantId,
             @Param("ahora") LocalDateTime ahora,
             @Param("limite") LocalDateTime limite);
+
+    @Query("SELECT r FROM Reserva r WHERE r.tenant.tenantId = :tenantId " +
+            "AND r.estado = 'Activa' " +
+            "AND FUNCTION('DATE', r.fechaReserva) = FUNCTION('DATE', CURRENT_DATE) " +
+            "AND r.confirmada = false " +
+            "AND r.mensajeConfirmacionEnviado = true")
+    List<Reserva> findPendientesDeConfirmacionHoy(Long tenantId);
 }

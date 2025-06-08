@@ -125,4 +125,9 @@ public class ReservaController {
     public List<ReservaDTO> cancelarReservasExpiradas() {
         return reservaService.cancelarReservasExpiradas();
     }
+
+    @QueryMapping
+    public List<ReservaDTO> getReservasHoyPendientesDeConfirmacion(@Argument Long tenantId) {
+        return reservaService.getReservasHoyPendientesDeConfirmacion(tenantId);
+    }
 }
