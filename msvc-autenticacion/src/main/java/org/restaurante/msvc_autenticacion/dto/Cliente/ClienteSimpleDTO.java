@@ -11,5 +11,7 @@ public class ClienteSimpleDTO {
     private Long clienteId;
     private String nombre;
     private String apellido;
+    private String username;
     private String telefono;
+    private String email;
 }

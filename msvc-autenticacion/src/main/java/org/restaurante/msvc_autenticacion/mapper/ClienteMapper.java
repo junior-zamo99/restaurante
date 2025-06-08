@@ -14,7 +14,6 @@ public class ClienteMapper {
     @Autowired
     private TenantMapper tenantMapper;
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ClienteDTO toDto(Cliente cliente) {
@@ -22,28 +21,29 @@ public class ClienteMapper {
             return null;
         }
 
-        ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setClienteId(cliente.getClienteId());
-        clienteDTO.setNombre(cliente.getNombre());
-        clienteDTO.setApellido(cliente.getApellido());
-        clienteDTO.setEmail(cliente.getEmail());
-        clienteDTO.setTelefono(cliente.getTelefono());
-        clienteDTO.setDireccion(cliente.getDireccion());
-        clienteDTO.setEstado(cliente.getEstado());
+        ClienteDTO dto = new ClienteDTO();
+        dto.setClienteId(cliente.getClienteId());
+        dto.setNombre(cliente.getNombre());
+        dto.setApellido(cliente.getApellido());
+        dto.setEmail(cliente.getEmail());
+        dto.setUsername(cliente.getUsername());
+        dto.setTelefono(cliente.getTelefono());
+        dto.setDireccion(cliente.getDireccion());
+        dto.setEstado(cliente.getEstado());
 
         if (cliente.getTenant() != null) {
-            clienteDTO.setTenant(tenantMapper.toSimpleDto(cliente.getTenant()));
+            dto.setTenant(tenantMapper.toSimpleDto(cliente.getTenant()));
         }
 
         if (cliente.getFechaNacimiento() != null) {
-            clienteDTO.setFechaNacimiento(cliente.getFechaNacimiento().format(DATE_FORMATTER));
+            dto.setFechaNacimiento(cliente.getFechaNacimiento().toLocalDate().format(DATE_FORMATTER));
         }
 
         if (cliente.getCreatedAt() != null) {
-            clienteDTO.setCreatedAt(cliente.getCreatedAt().format(DATE_TIME_FORMATTER));
+            dto.setCreatedAt(cliente.getCreatedAt().toString());
         }
 
-        return clienteDTO;
+        return dto;
     }
 
     public ClienteSimpleDTO toSimpleDto(Cliente cliente) {
@@ -51,13 +51,15 @@ public class ClienteMapper {
             return null;
         }
 
-        return new ClienteSimpleDTO(
-                cliente.getClienteId(),
-                cliente.getNombre(),
-                cliente.getApellido(),
-                cliente.getTelefono()
-        );
-    }
+        ClienteSimpleDTO dto = new ClienteSimpleDTO();
+        dto.setClienteId(cliente.getClienteId());
+        dto.setNombre(cliente.getNombre());
+        dto.setApellido(cliente.getApellido());
+        dto.setTelefono(cliente.getTelefono());
+        dto.setEmail(cliente.getEmail());
+        dto.setUsername(cliente.getUsername());
 
+        return dto;
+    }
 
 }

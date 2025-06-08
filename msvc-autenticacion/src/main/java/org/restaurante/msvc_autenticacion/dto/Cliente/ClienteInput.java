@@ -11,6 +11,8 @@ public class ClienteInput {
     private String apellido;
     private String email;
     private String telefono;
+    private String username;
+    private String password;
     private String direccion;
     private String fechaNacimiento;
     private Boolean estado;

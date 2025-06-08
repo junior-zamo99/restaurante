@@ -89,6 +89,7 @@ type PermisoSimple {
 type AuthPayload {
     token: String
     usuario: Usuario
+    cliente: Cliente
 }
 
 type Categoria {
@@ -389,6 +390,7 @@ type Cliente {
     email: String
     telefono: String
     direccion: String
+    username: String
     fechaNacimiento: String
     estado: Boolean
     tenant: TenantSimple
@@ -399,6 +401,7 @@ type ClienteSimple {
     clienteId: ID
     nombre: String
     apellido: String
+    username: String
     telefono: String
     email: String
 }
@@ -407,6 +410,8 @@ input ClienteInput {
     apellido: String!
     email: String
     telefono: String
+    username: String!
+    password: String
     direccion: String
     fechaNacimiento: String
     estado: Boolean
@@ -676,6 +681,8 @@ type Mutation {
 
     # Autenticación
     login(username: String!, password: String!): AuthPayload
+    loginCliente(username: String!, password: String!): AuthPayload
+
 
     # Mutations de Categoria
 

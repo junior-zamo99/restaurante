@@ -8,6 +8,7 @@ import org.restaurante.msvc_autenticacion.model.Tenant;
 import org.restaurante.msvc_autenticacion.repository.ClienteRepository;
 import org.restaurante.msvc_autenticacion.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class ClienteService {
     private TenantRepository tenantRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private ClienteMapper clienteMapper;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -33,6 +37,12 @@ public class ClienteService {
     public ClienteDTO findById(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + id));
+        return clienteMapper.toDto(cliente);
+    }
+
+    public ClienteDTO findByUsername(String username) {
+        Cliente cliente = clienteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con username: " + username));
         return clienteMapper.toDto(cliente);
     }
 
@@ -64,8 +74,6 @@ public class ClienteService {
         return clienteMapper.toDto(cliente);
     }
 
-
-
     @Transactional
     public ClienteDTO create(ClienteInput input) {
         if (input.getTenantId() == null) {
@@ -78,6 +86,10 @@ public class ClienteService {
 
         if (input.getTelefono() != null && clienteRepository.existsByTenantTenantIdAndTelefono(input.getTenantId(), input.getTelefono())) {
             throw new RuntimeException("Ya existe un cliente con ese teléfono en este tenant");
+        }
+
+        if (input.getUsername() != null && clienteRepository.existsByUsername(input.getUsername())) {
+            throw new RuntimeException("El nombre de usuario ya está en uso");
         }
 
         Cliente cliente = new Cliente();
@@ -99,6 +111,11 @@ public class ClienteService {
             throw new RuntimeException("Ya existe un cliente con ese teléfono en este tenant");
         }
 
+        if (input.getUsername() != null && !cliente.getUsername().equals(input.getUsername()) &&
+                clienteRepository.existsByUsername(input.getUsername())) {
+            throw new RuntimeException("El nombre de usuario ya está en uso");
+        }
+
         return saveOrUpdateCliente(cliente, input);
     }
 
@@ -109,6 +126,14 @@ public class ClienteService {
         cliente.setTelefono(input.getTelefono());
         cliente.setDireccion(input.getDireccion());
         cliente.setEstado(input.getEstado());
+
+        if (input.getUsername() != null) {
+            cliente.setUsername(input.getUsername());
+        }
+
+        if (input.getPassword() != null && !input.getPassword().isEmpty()) {
+            cliente.setPassword(passwordEncoder.encode(input.getPassword()));
+        }
 
         Tenant tenant = tenantRepository.findById(input.getTenantId())
                 .orElseThrow(() -> new RuntimeException("Tenant no encontrado con id: " + input.getTenantId()));
@@ -145,5 +170,4 @@ public class ClienteService {
         Cliente savedCliente = clienteRepository.save(cliente);
         return clienteMapper.toDto(savedCliente);
     }
-
 }

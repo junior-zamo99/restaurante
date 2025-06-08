@@ -2,6 +2,7 @@ package org.restaurante.msvc_autenticacion.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.restaurante.msvc_autenticacion.model.Cliente;
 import org.restaurante.msvc_autenticacion.model.Permiso;
 import org.restaurante.msvc_autenticacion.model.Rol;
 import org.restaurante.msvc_autenticacion.model.Usuario;
@@ -98,5 +99,21 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public String createTokenForCliente(Cliente cliente) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+
+        return Jwts.builder()
+                .setSubject(cliente.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .claim("tenantId", cliente.getTenant().getTenantId())
+                .claim("clienteId", cliente.getClienteId())
+                .claim("esCliente", true)
+                // No incluimos roles o permisos
+                .signWith(getSigningKey())
+                .compact();
     }
 }

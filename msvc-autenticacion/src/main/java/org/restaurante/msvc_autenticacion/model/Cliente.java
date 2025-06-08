@@ -37,6 +37,12 @@ public class Cliente {
     @Column(name = "apellido")
     private String apellido;
 
+    @Column(name = "username", unique = true)
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
     @Email
     @Column(name = "email")
     private String email;
