@@ -400,6 +400,7 @@ type ClienteSimple {
     nombre: String
     apellido: String
     telefono: String
+    email: String
 }
 input ClienteInput {
     nombre: String!
@@ -474,12 +475,12 @@ input CuentaMesaInput {
 
 # Tipos para Reserva
 type Reserva {
-    id: ID!
+    reservaId: ID!
     fechaReserva: String!
     hora: String!
     cantidadPersonas: Int!
-    mesa: Mesa!
-    cliente: Cliente!
+    mesa: MesaSimple!
+    cliente: ClienteSimple!
     estado: String!
     mensajeConfirmacionEnviado: Boolean
     mensajeConfirmacionEnviadoEn: String

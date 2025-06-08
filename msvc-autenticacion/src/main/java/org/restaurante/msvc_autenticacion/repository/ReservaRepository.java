@@ -81,12 +81,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     // Reservas para recordatorio (próximas N horas)
     @Query("SELECT r FROM Reserva r JOIN r.cliente c " +
             "WHERE r.tenant.tenantId = :tenantId " +
-            "AND r.fechaReserva BETWEEN :ahora AND :limite " +
+            "AND FUNCTION('DATE', r.fechaReserva) >= FUNCTION('DATE', :ahora) " +
+            "AND FUNCTION('DATE', r.fechaReserva) <= FUNCTION('DATE', :limite) " +
             "AND r.estado = 'Activa' " +
             "AND r.mensajeConfirmacionEnviado = false")
     List<Reserva> findReservasForReminder(
             @Param("tenantId") Long tenantId,
             @Param("ahora") LocalDateTime ahora,
             @Param("limite") LocalDateTime limite);
-
 }

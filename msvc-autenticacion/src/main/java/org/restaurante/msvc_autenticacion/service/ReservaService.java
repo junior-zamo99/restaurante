@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -191,6 +192,17 @@ public class ReservaService {
             }
         }
 
+        // NUEVO: Inicialización de campos de confirmación
+
+        if (reserva.getMensajeConfirmacionEnviado() == null) {
+            reserva.setMensajeConfirmacionEnviado(false);
+        }
+
+
+        if (reserva.getReservaId() == null && reserva.getConfirmada() == null) {
+            reserva.setConfirmada(false);
+        }
+
         Reserva savedReserva = reservaRepository.save(reserva);
         return reservaMapper.toDto(savedReserva);
     }
@@ -287,11 +299,43 @@ public class ReservaService {
     }
 
     // Método para encontrar reservas que necesitan recordatorio
+    @Transactional(readOnly = true)
     public List<ReservaDTO> findReservasForReminder(Long tenantId, Integer horas) {
         LocalDateTime ahora = LocalDateTime.now();
         LocalDateTime limite = ahora.plusHours(horas);
 
-        return reservaRepository.findReservasForReminder(tenantId, ahora, limite).stream()
+        // Obtener todas las reservas activas que necesitan recordatorio
+        List<Reserva> todasLasReservasActivas = reservaRepository
+                .findByTenantTenantIdAndEstado(tenantId, "Activa");
+
+        // Filtrar manualmente por fecha, hora y campo de recordatorio
+        List<Reserva> reservasParaRecordatorio = todasLasReservasActivas.stream()
+                .filter(r -> {
+                    // Verificar que no se haya enviado recordatorio
+                    if (r.getMensajeConfirmacionEnviado()) {
+                        return false;
+                    }
+
+                    // Comparar solo la fecha (sin hora)
+                    LocalDate fechaReserva = r.getFechaReserva().toLocalDate();
+                    LocalDate fechaHoy = ahora.toLocalDate();
+                    LocalDate fechaLimite = limite.toLocalDate();
+
+                    // La fecha debe estar entre hoy y el límite
+                    if (fechaReserva.isBefore(fechaHoy) || fechaReserva.isAfter(fechaLimite)) {
+                        return false;
+                    }
+
+                    // Si es para hoy, verificar que la hora sea posterior a la actual
+                    if (fechaReserva.equals(fechaHoy)) {
+                        return r.getHora().isAfter(ahora.toLocalTime());
+                    }
+
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        return reservasParaRecordatorio.stream()
                 .map(reservaMapper::toDto)
                 .collect(Collectors.toList());
     }
