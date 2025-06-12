@@ -2,18 +2,17 @@ server:
   port: 8888
 
 spring:
+  application:
+    name: msvc-config
   profiles:
     active: native
-  application:
-    name: config-server
   cloud:
     config:
       server:
         native:
           search-locations: classpath:/configuraciones
-        fail-fast: true
-      discovery:
-        enabled: false
-      loadbalancer:
-        retry:
-          enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.config: INFO
+    org.springframework.boot: INFO

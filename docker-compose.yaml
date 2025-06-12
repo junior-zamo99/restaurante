@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  # =============================================
+  # BASE DE DATOS POSTGRESQL - SIN CAMBIOS
+  # =============================================
+  postgres16:
+    image: postgres:16-alpine
+    container_name: postgres16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: msvc-autenticacion
+    ports:
+      - "5532:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - restaurante
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # =============================================
+  # CONFIG SERVER - ✅ HEALTH CHECK ARREGLADO
+  # =============================================
+  msvc-config:
+    build:
+      context: ./
+      dockerfile: ./msvc-config/Dockerfile
+    container_name: msvc-config
+    ports:
+      - "8888:8888"
+    networks:
+      - restaurante
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    healthcheck:
+      # ✅ CAMBIO CRÍTICO: Sin /actuator/health - solo verificar que responda
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/", "||", "exit", "1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 30s  # ✅ REDUCIDO de 60s a 30s
+
+  # =============================================
+  # EUREKA SERVER - SIN CAMBIOS
+  # =============================================
+  msvc-eureka:
+    build:
+      context: ./
+      dockerfile: ./msvc-eureka/Dockerfile
+    container_name: msvc-eureka
+    ports:
+      - "8761:8761"
+    depends_on:
+      msvc-config:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://msvc-config:8888
+      - SERVER_PORT=8761
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://msvc-eureka:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=msvc-eureka
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+      - SPRING_CLOUD_CONFIG_IMPORT_CHECK_ENABLED=false
+      - EUREKA_SERVER_ENABLE_SELF_PRESERVATION=false
+      - EUREKA_SERVER_WAIT_TIME_IN_MS_WHEN_SYNC_EMPTY=0
+    networks:
+      - restaurante
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health", "||", "exit", "1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  # =============================================
+  # RESTO SIN CAMBIOS
+  # =============================================
+  msvc-autenticacion:
+    build:
+      context: ./
+      dockerfile: ./msvc-autenticacion/Dockerfile
+    container_name: msvc-autenticacion
+    ports:
+      - "9091:9091"
+    depends_on:
+      postgres16:
+        condition: service_healthy
+      msvc-eureka:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://msvc-config:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://msvc-eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres16:5432/msvc-autenticacion
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SERVER_PORT=9091
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+      - SPRING_CLOUD_CONFIG_IMPORT_CHECK_ENABLED=false
+    networks:
+      - restaurante
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9091/actuator/health", "||", "exit", "1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  msvc-gateway:
+    build:
+      context: ./
+      dockerfile: ./msvc-gateway/Dockerfile
+    container_name: msvc-gateway
+    ports:
+      - "9090:9090"
+    depends_on:
+      msvc-eureka:
+        condition: service_healthy
+      msvc-autenticacion:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://msvc-config:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://msvc-eureka:8761/eureka/
+      - SERVER_PORT=9090
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+      - SPRING_CLOUD_CONFIG_IMPORT_CHECK_ENABLED=false
+    networks:
+      - restaurante
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/actuator/health", "||", "exit", "1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  restaurante:
+    driver: bridge
+
+volumes:
+  postgres_data:

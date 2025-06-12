@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: msvc-autenticacion
+spec:
+  selector:
+    app: msvc-autenticacion
+  ports:
+  - port: 9091
+    targetPort: 9091
+    protocol: TCP
+  type: LoadBalancer

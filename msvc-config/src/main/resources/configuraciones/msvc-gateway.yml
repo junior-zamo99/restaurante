@@ -1,8 +1,5 @@
-eureka:
-  client:
-    register-with-eureka: false
-
-
+server:
+  port: 9090
 spring:
   application:
     name: msvc-gateway
@@ -11,20 +8,57 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
       routes:
-        - id: msvc-autenticacion
-          uri: http://localhost:8081
+        # 🔥 RUTAS EXISTENTES (mantener)
+        - id: msvc-autenticacion-graphql
+          uri: http://msvc-autenticacion:9091
           predicates:
             - Path=/graphql/**
           filters:
             - AddRequestHeader=Content-Type, application/json
+        - id: msvc-autenticacion-auth
+          uri: http://msvc-autenticacion:9091
+          predicates:
+            - Path=/auth/**
+        - id: msvc-autenticacion-actuator
+          uri: http://msvc-autenticacion:9091
+          predicates:
+            - Path=/actuator/**
+        - id: msvc-autenticacion-api
+          uri: http://msvc-autenticacion:9091
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+        - id: msvc-blockchain-graphql
+          uri: http://64.236.123.103:3000
+          predicates:
+            - Path=/blockchain/graphql/**
+          filters:
+            - RewritePath=/blockchain/graphql/(?<segment>.*), /graphql/$\{segment}
+            - AddRequestHeader=Content-Type, application/json
+        - id: msvc-blockchain-health
+          uri: http://64.236.123.103:3000
+          predicates:
+            - Path=/blockchain/health/**
+          filters:
+            - RewritePath=/blockchain/health/(?<segment>.*), /health/$\{segment}
+        - id: msvc-blockchain-api
+          uri: http://64.236.123.103:3000
+          predicates:
+            - Path=/blockchain/**
+          filters:
+            - StripPrefix=1
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins:
-              - "http://localhost:4200"
-              - "http://localhost:8080"
+            allowedOriginPatterns: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
-            allowCredentials: true
+            allowCredentials: false
             maxAge: 3600
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG

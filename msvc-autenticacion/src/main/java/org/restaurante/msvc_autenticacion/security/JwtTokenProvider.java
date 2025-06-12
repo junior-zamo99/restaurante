@@ -23,7 +23,7 @@ public class JwtTokenProvider {
     @Value("${app.jwt.secret:secretSuperSeguroDe256BitsParaHMACSHA}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:86400000}")  // 24 horas por defecto
+    @Value("${app.jwt.expiration:86400000}")
     private long jwtExpirationInMs;
 
     private SecretKey getSigningKey() {
@@ -78,9 +78,14 @@ public class JwtTokenProvider {
         @SuppressWarnings("unchecked")
         List<String> authorities = (List<String>) claims.get("authorities");
 
-        List<SimpleGrantedAuthority> grantedAuthorities = authorities.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        List<SimpleGrantedAuthority> grantedAuthorities;
+        if (authorities != null) {
+            grantedAuthorities = authorities.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        } else {
+            grantedAuthorities = List.of();
+        }
 
         return new UsernamePasswordAuthenticationToken(
                 new JwtUserDetails(username, userId, tenantId),
@@ -112,7 +117,7 @@ public class JwtTokenProvider {
                 .claim("tenantId", cliente.getTenant().getTenantId())
                 .claim("clienteId", cliente.getClienteId())
                 .claim("esCliente", true)
-                // No incluimos roles o permisos
+
                 .signWith(getSigningKey())
                 .compact();
     }

@@ -48,11 +48,11 @@ public class BlockchainService {
     @Autowired
     private PedidoDetalleRepository pedidoDetalleRepository;
 
-    @Value("${blockchain.url:http://localhost:3001/graphql}")
+    @Value("${blockchain.url:http://64.236.123.103:3000/graphql}")
     private String blockchainUrl;
 
     public BlockchainService(
-            @Value("${blockchain.url:http://localhost:3001/graphql}") String blockchainUrl
+            @Value("${blockchain.url:http://64.236.123.103:3000/graphql}") String blockchainUrl
     ) {
         WebClient webClient = WebClient.builder()
                 .baseUrl(blockchainUrl)
